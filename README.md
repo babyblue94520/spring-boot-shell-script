@@ -31,7 +31,10 @@ Spring-Boot預設的Linux啟動腳本有些問題，以及一些特殊需求。
        	action.sh restore 1 
 
   * backup：備份running，最多保留5個備份檔
-  * log：tail log
+  * traceLog：tail -f 當前系統輸出的log檔
+  * tailLog：tail 當前系統輸出的log檔
+
+
 * temp.sh  
   或許覺得這個很蠢，但是只有一台機器又要做到更新不中斷服務，為何不用nginx等等的服務做load balance?很難去解釋線上有些request失敗是因為更新過程中，極少數的request訪問到死掉的服務，就連iptable提供的load balance再關閉其中一個服務，都會有1~3%的請求失敗。
   * start：複製running到temp並依指定的port啟動服務
@@ -82,6 +85,16 @@ Spring-Boot預設的Linux啟動腳本有些問題，以及一些特殊需求。
         JAR_FILE="$RUN_FOLDER/$JAR_NAME.jar"
         #JAR_CONF
         JAR_CONF="$RUN_FOLDER/$JAR_NAME.conf"
+        # 暫時運行目錄
+        TEMP_RUN_FOLDER="$PWD/temp_running"
+        # 暫時運行PID
+        TEMP_PID_FILE="$TEMP_RUN_FOLDER/$JAR_NAME.pid"
+        # 暫時運行 startup log
+        TEMP_STARTUP_LOG="$TEMP_RUN_FOLDER/startup.log"
+        #JAR_FILE
+        TEMP_JAR_FILE="$TEMP_RUN_FOLDER/$JAR_NAME.jar"
+        #JAR_CONF
+        TEMP_JAR_CONF="$TEMP_RUN_FOLDER/$JAR_NAME.conf"
 
 * 起手式：  
 這樣就會自動幫你把source同步到running，然後啟動服務。

@@ -10,7 +10,7 @@ printlnRed() { printf "$formatRed" "$1"; }
 printlnGreen() { printf "$formatGreen" "$1"; }
 printlnYellow() { printf "$formatYellow" "$1"; }
 # jar 名稱
-JAR_NAME=""
+JAR_NAME="schedule-service"
 # 註冊在init.d 的服務名稱
 SERVICE_NAME="$JAR_NAME"
 # 資料的原始檔

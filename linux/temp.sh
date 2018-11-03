@@ -66,9 +66,11 @@ trackStart(){
 	tail -f "$TEMP_STARTUP_LOG" &
 	tail_pid="$!"
 	
+	sleep 3
+	for i in {1..40};
 	# 檢查log輸出停止了
-	until curl "http://localhost:$port" &> /dev/null
 	do
+		curl "http://localhost:$port" &> /dev/null && break
 		isRunning "$pid" || break
 		sleep 5
 		printlnYellow "start check..."

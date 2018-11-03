@@ -17,9 +17,15 @@ isRunning() {
 }
 
 #查看log
-log(){
+traceLog(){
 	printlnYellow "tail -f $LOG_FILE"
 	tail -f $LOG_FILE
+}
+
+#查看log
+tailLog(){
+	printlnYellow "tail $@ $LOG_FILE"
+	tail "$@" $LOG_FILE
 }
 
 #啟動服務
@@ -82,9 +88,11 @@ trackStart(){
 	tail -f "$STARTUP_LOG" &
 	tail_pid="$!"
 	
+	sleep 3
+	for i in {1..40};
 	# 檢查log輸出停止了
-	until curl "http://localhost:$port" &> /dev/null
 	do
+		curl "http://localhost:$port" &> /dev/null && break
 		isRunning "$pid" || break
 		sleep 5
 		printlnYellow "start check..."
@@ -186,7 +194,7 @@ backup(){
 }
 
 #清除所有備份
-cleanbackup(){
+cleanBackup(){
 	printlnYellow "$SERVICE_NAME clean all backup..."
 	# 移除備份
 	find "$PWD/" -maxdepth 1 -type d -name "backup*" -exec rm -rf {} \;
@@ -234,26 +242,29 @@ case "$action" in
 	update "$@"; exit $?;;
 	updateStatic)
 	updateStatic "$@"; exit $?;;
-	cleanbackup)
-	cleanbackup "$@"; exit $?;;
+	cleanBackup)
+	cleanBackup "$@"; exit $?;;
 	restore)
 	restore "$@"; exit $?;;
 	backup)
 	backup "$@"; exit $?;;
-	log)
-	log "$@"; exit $?;;
+	traceLog)
+	traceLog "$@"; exit $?;;
+	tailLog)
+	tailLog "$@"; exit $?;;
 	*)
- 	printlnGreen "Usage: $0 {start|stop|restart|update|updateStatic|cleanbackup|restore|backup|log}"
+ 	printlnGreen "Usage: $0 {start|stop|restart|update|updateStatic|cleanBackup|restore|backup|traceLog}"
  	printlnGreen "start 80 :start service and listen 80 port"
 	printlnGreen "stop:stop service"
 	printlnGreen "restart:restart service"
 	printlnGreen "status:service status "
 	printlnGreen "update 80 :update service and restart service and listen 80 port"
 	printlnGreen "updateStatic:update static file and not restart service"
-	printlnGreen "cleanbackup:clean all backup。"
+	printlnGreen "cleanBackup:clean all backup。"
 	printlnGreen "restore 1~5 80:restore for number and listen 80 port"
 	printlnGreen "backup:backup service"
-	printlnGreen "log: tail -f log"
+	printlnGreen "traceLog: tail -f log"
+	printlnGreen "tailLog: tail $@ log"
 	exit 1;
 esac
 exit 0
